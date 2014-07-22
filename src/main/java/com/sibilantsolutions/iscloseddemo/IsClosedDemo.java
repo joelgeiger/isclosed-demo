@@ -154,12 +154,21 @@ public class IsClosedDemo
 
                     if ( originalIsClosed != nowIsClosed )
                     {
-                        System.out.println( "Value of isClosed changed from=" + originalIsClosed +
-                                " to " + nowIsClosed + "!!!!!" );
+                        System.out.println(
+                                "\n" +
+                                "***********************\n" +
+                                "*** BUG BUG BUG BUG BUG\n" +
+                                "***\n" +
+                                "*** Value of isClosed changed from=" + originalIsClosed +
+                                " to=" + nowIsClosed + "!!!!!\n" +
+                                "***\n" +
+                                "*** BUG BUG BUG BUG BUG\n" +
+                                "***********************" );
                     }
                     else
                     {
-                        System.out.println( "Value of isClosed stayed=" + originalIsClosed + '.' );
+                        System.out.println( "Bug not encountered.  Value of isClosed stayed=" +
+                                originalIsClosed + '.' );
                     }
                 }
             }
