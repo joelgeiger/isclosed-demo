@@ -87,7 +87,6 @@ public class IsClosedDemo
 
             sslSocket.addHandshakeCompletedListener( new HandshakeCompletedListener() {
 
-                @Override
                 public void handshakeCompleted( HandshakeCompletedEvent event )
                 {
                     System.out.println( "SSL handshake completed: " + event.getSocket() + "." );
@@ -104,7 +103,6 @@ public class IsClosedDemo
     {
         Runnable r = new Runnable() {
 
-            @Override
             public void run()
             {
                 InputStream ins;
@@ -175,7 +173,6 @@ public class IsClosedDemo
     {
         Runnable r = new Runnable() {
 
-            @Override
             public void run()
             {
                 System.out.println( "Calling close." );
