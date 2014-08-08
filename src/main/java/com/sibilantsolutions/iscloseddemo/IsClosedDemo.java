@@ -29,6 +29,8 @@ import javax.net.ssl.SSLSocketFactory;
 public class IsClosedDemo
 {
 
+    static private boolean isBugEncountered = false;
+
     static public void main( String[] args )
     {
         int i = 0;
@@ -37,25 +39,43 @@ public class IsClosedDemo
         boolean isSSL = Boolean.parseBoolean( args[i++] );
         long sleepMs = Long.parseLong( args[i++] );
 
-        System.out.println( "Testing against host=" + host + ", port=" + port + ", ssl=" + isSSL +
-                ", sleepMs=" + sleepMs + '.' );
+        int loopCount;
 
-        Socket socket = connect( host, port, isSSL );
-
-        readInThread( socket, sleepMs );
-
-        try
+        for( loopCount = 0; ! isBugEncountered; loopCount++ )
         {
-                //Let the read thread get started.
-            Thread.sleep( 5 * 1000 );
-        }
-        catch ( InterruptedException e )
-        {
-            // TODO Auto-generated catch block
-            throw new UnsupportedOperationException( "OGTE TODO!", e );
+            System.out.println( "Testing (loop=" + (loopCount+1) + ") against host=" + host + ", port=" + port + ", ssl=" + isSSL +
+                    ", sleepMs=" + sleepMs + '.' );
+
+            Socket socket = connect( host, port, isSSL );
+
+            Thread readThread = readInThread( socket, sleepMs );
+
+            try
+            {
+                    //Let the read thread get started.
+                Thread.sleep( 5 * 1000 );
+            }
+            catch ( InterruptedException e )
+            {
+                // TODO Auto-generated catch block
+                throw new UnsupportedOperationException( "OGTE TODO!", e );
+            }
+
+            testInThread( socket );
+
+            try
+            {
+                    //Wait for the read thread to die before deciding whether to loop again.
+                readThread.join();
+            }
+            catch ( InterruptedException e )
+            {
+                // TODO Auto-generated catch block
+                throw new UnsupportedOperationException( "MY TODO!", e );
+            }
         }
 
-        testInThread( socket );
+        System.out.println( "Finished after " + loopCount + " attempt(s)." );
     }
 
     private static Socket connect( String host, int port, boolean isSSL )
@@ -99,7 +119,7 @@ public class IsClosedDemo
         return socket;
     }
 
-    private static void readInThread( final Socket socket, final long sleepMs )
+    private static Thread readInThread( final Socket socket, final long sleepMs )
     {
         Runnable r = new Runnable() {
 
@@ -164,6 +184,8 @@ public class IsClosedDemo
                                 "***\n" +
                                 "*** BUG BUG BUG BUG BUG\n" +
                                 "***********************" );
+
+                        isBugEncountered = true;
                     }
                     else
                     {
@@ -176,6 +198,8 @@ public class IsClosedDemo
 
         Thread thread = new Thread( r );
         thread.start();
+
+        return thread;
     }
 
     private static void testInThread( final Socket socket )
